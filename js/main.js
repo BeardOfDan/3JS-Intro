@@ -9,7 +9,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Cube
-let geometry = new THREE.BoxGeometry(3, 1, 1);
+let geometry = new THREE.BoxGeometry(3, 2.5, 1);
 let material = new THREE.MeshBasicMaterial({
   color: 0x00ff00,
   transparent: true,
@@ -53,26 +53,27 @@ gamma.position.set(1, 0, 0);
 scene.add(gamma);
 
 
+const group1 = new THREE.Object3D();
+group1.add(alpha);
+group1.add(beta);
+group1.add(gamma);
+group1.position.y -= 0.75;
+scene.add(group1);
+
+const group2 = group1.clone();
+group2.position.y += 1.5;
+scene.add(group2);
+
+const hallway = new THREE.Mesh(new THREE.BoxGeometry(3, 0.5, 1), new THREE.MeshBasicMaterial({
+  color: 0x800080,
+  transparent: false,
+  wireframe: true
+  // opacity: 0.5
+}));
+scene.add(hallway);
+
 function animate() { // runs with frequency of frame rate
   requestAnimationFrame(animate);
-
-  if (true) {
-    cube.rotation.x += 0.01;
-    // cube.rotation.y += 0.01;
-    // cube.rotation.z += 0.01;
-
-    alpha.rotation.x -= 0.05;
-    // alpha.rotation.y -= 0.05;
-    // alpha.rotation.z -= 0.05;
-
-    beta.rotation.x -= 0.05;
-    // beta.rotation.y -= 0.05;
-    // beta.rotation.z -= 0.05;
-
-    gamma.rotation.x -= 0.05;
-    // gamma.rotation.y -= 0.05;
-    // gamma.rotation.z -= 0.05;
-  }
 
   renderer.render(scene, camera);
 }

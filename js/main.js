@@ -9,7 +9,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Cube
-let geometry = new THREE.BoxGeometry(3, 3, 3);
+let geometry = new THREE.BoxGeometry(3, 1, 1);
 let material = new THREE.MeshBasicMaterial({
   color: 0x00ff00,
   transparent: true,
@@ -17,29 +17,62 @@ let material = new THREE.MeshBasicMaterial({
   // wireframe: true
 });
 const cube = new THREE.Mesh(geometry, material);
+cube.position.set(0, 0, 0);
 scene.add(cube);
 
+// alpha
 geometry = new THREE.BoxGeometry(1, 1, 1);
 material = new THREE.MeshBasicMaterial({
   color: 0x0000ff,
-  transparent: false
+  transparent: false,
+  wireframe: true
   // opacity: 0.5
 });
-const innerCube = new THREE.Mesh(geometry, material);
-scene.add(innerCube);
+const alpha = new THREE.Mesh(geometry, material);
+alpha.position.set(-1, 0, 0);
+scene.add(alpha);
 
+// beta
+const beta = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
+  color: 0xff0000,
+  transparent: false,
+  wireframe: true
+  // opacity: 0.5
+}));
+beta.position.set(0, 0, 0);
+scene.add(beta);
+
+// gamma
+const gamma = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
+  color: 0x0000ff,
+  transparent: false,
+  wireframe: true
+  // opacity: 0.5
+}));
+gamma.position.set(1, 0, 0);
+scene.add(gamma);
 
 
 function animate() { // runs with frequency of frame rate
   requestAnimationFrame(animate);
 
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
-  cube.rotation.z += 0.01;
+  if (true) {
+    cube.rotation.x += 0.01;
+    // cube.rotation.y += 0.01;
+    // cube.rotation.z += 0.01;
 
-  innerCube.rotation.x -= 0.05;
-  innerCube.rotation.y -= 0.05;
-  innerCube.rotation.z -= 0.05;
+    alpha.rotation.x -= 0.05;
+    // alpha.rotation.y -= 0.05;
+    // alpha.rotation.z -= 0.05;
+
+    beta.rotation.x -= 0.05;
+    // beta.rotation.y -= 0.05;
+    // beta.rotation.z -= 0.05;
+
+    gamma.rotation.x -= 0.05;
+    // gamma.rotation.y -= 0.05;
+    // gamma.rotation.z -= 0.05;
+  }
 
   renderer.render(scene, camera);
 }

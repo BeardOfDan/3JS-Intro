@@ -2,7 +2,7 @@
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x909090);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
+camera.position.z = 10;
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -13,11 +13,10 @@ let geometry = new THREE.BoxGeometry(3, 2.5, 1);
 let material = new THREE.MeshBasicMaterial({
   color: 0x00ff00,
   transparent: true,
-  opacity: 0.25
+  opacity: 0.5
   // wireframe: true
 });
 const cube = new THREE.Mesh(geometry, material);
-cube.position.set(0, 0, 0);
 scene.add(cube);
 
 // alpha
@@ -29,7 +28,7 @@ material = new THREE.MeshBasicMaterial({
   // opacity: 0.5
 });
 const alpha = new THREE.Mesh(geometry, material);
-alpha.position.set(-1, 0, 0);
+alpha.translateX(-1);
 scene.add(alpha);
 
 // beta
@@ -39,7 +38,6 @@ const beta = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicM
   wireframe: true
   // opacity: 0.5
 }));
-beta.position.set(0, 0, 0);
 scene.add(beta);
 
 // gamma
@@ -49,7 +47,7 @@ const gamma = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasic
   wireframe: true
   // opacity: 0.5
 }));
-gamma.position.set(1, 0, 0);
+gamma.translateX(1);
 scene.add(gamma);
 
 
@@ -57,11 +55,11 @@ const group1 = new THREE.Object3D();
 group1.add(alpha);
 group1.add(beta);
 group1.add(gamma);
-group1.position.y -= 0.75;
+group1.translateY(-0.75);
 scene.add(group1);
 
 const group2 = group1.clone();
-group2.position.y += 1.5;
+group2.translateY(1.5);
 scene.add(group2);
 
 const hallway = new THREE.Mesh(new THREE.BoxGeometry(3, 0.5, 1), new THREE.MeshBasicMaterial({
@@ -72,7 +70,28 @@ const hallway = new THREE.Mesh(new THREE.BoxGeometry(3, 0.5, 1), new THREE.MeshB
 }));
 scene.add(hallway);
 
-function animate() { // runs with frequency of frame rate
+const building = new THREE.Object3D();
+building.add(cube, group1, group2, hallway);
+
+const buildings = [];
+
+for (let i = 0; i < 10; i++) {
+  buildings[i] = building.clone();
+
+  if (i < 5) {
+    buildings[i].translateX(3 * i - 6);
+    buildings[i].translateY(-5);
+  } else {
+    buildings[i].translateX(3 * i - 15 - 6);
+    buildings[i].translateY(5);
+  }
+
+  scene.add(buildings[i]);
+}
+
+scene.add(building);
+
+function animate() {
   requestAnimationFrame(animate);
 
   renderer.render(scene, camera);

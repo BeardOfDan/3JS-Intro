@@ -74,9 +74,48 @@ const hallway = new THREE.Mesh(new THREE.BoxGeometry(3, 0.5, 1), new THREE.MeshB
 // Above is a single building
 // Below is the automation of a building's creation
 
+const createTextLabel = function () {
+  var div = document.createElement('div');
+  div.className = 'text-label';
+  div.style.position = 'absolute';
+  div.style.width = 100;
+  div.style.height = 100;
+  div.innerHTML = "hi there!";
+  div.style.top = -1000;
+  div.style.left = -1000;
+
+  var _this = this;
+
+  return {
+    element: div,
+    parent: false,
+    position: new THREE.Vector3(0, 0, 0),
+    setHTML: function (html) {
+      this.element.innerHTML = html;
+    },
+    setParent: function (threejsobj) {
+      this.parent = threejsobj;
+    },
+    updatePosition: function () {
+      if (parent) {
+        this.position.copy(this.parent.position);
+      }
+
+      var coords2d = this.get2DCoords(this.position, _this.camera);
+      this.element.style.left = coords2d.x + 'px';
+      this.element.style.top = coords2d.y + 'px';
+    },
+    get2DCoords: function (position, camera) {
+      var vector = position.project(camera);
+      vector.x = (vector.x + 1) / 2 * window.innerWidth;
+      vector.y = -(vector.y - 1) / 2 * window.innerHeight;
+      return vector;
+    }
+  };
+};
+
 
 const hallHeight = 5;
-
 
 const makeBuilding = (Horizontal, Vertical, Depth = 1, settings = {}) => {
   const color = settings.color || 0x00ff00; // green
@@ -84,6 +123,7 @@ const makeBuilding = (Horizontal, Vertical, Depth = 1, settings = {}) => {
   // settings.roomSpecs = [] // particular rooms with particular specs
   //   calculates if numRooms > roomSpecs.length, if so, uses default values
   //     based on the remainder of the building (that's still empty), to size the rooms
+  const roomNames = settings.roomNames || [];
 
   const rooms = []; // array of objects
   // ex. {position: {x, y, z}, roomObject}
@@ -100,7 +140,7 @@ const makeBuilding = (Horizontal, Vertical, Depth = 1, settings = {}) => {
   const classroomHousing = new THREE.Mesh(geometry, material);
   building.add(classroomHousing);
 
-  // fill withrooms
+  // fill with rooms
   // half on one side, half on the other
   //   TODO: roomSpecs
   //   default rooms
@@ -127,6 +167,40 @@ const makeBuilding = (Horizontal, Vertical, Depth = 1, settings = {}) => {
 
     rooms[i].translateX(translations.x);
     rooms[i].translateY(translations.y);
+
+    if (roomNames) {
+      // const roomName = new THREE.TextGeometry(roomNames[i]);
+      // roomName.translateX(translations.x);
+      // roomName.translateY(translations.y);
+      // building.add(roomName);
+
+      // var loader = new THREE.FontLoader();
+      // loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
+
+      // }
+
+      // const loader = new THREE.FontLoader();
+
+      // // loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+      // loader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+      //   const geometry = new THREE.TextGeometry('Hello three.js!', {
+      //     font: font,
+      //     size: 80,
+      //     height: 5,
+      //     curveSegments: 12,
+      //     bevelEnabled: true,
+      //     bevelThickness: 10,
+      //     bevelSize: 8,
+      //     bevelSegments: 5
+      //   });
+
+      //   const roomName = new THREE.TextGeometry("asdf", geometry);
+      // });
+
+      // Consider checking out the code that was used for https://seregpie.github.io/THREE.TextSprite/
+
+      // console.log('made label');
+    }
 
     building.add(rooms[i]);
   }
@@ -179,13 +253,20 @@ const makeRoom = (Horizontal, Vertical, Depth = 1, settings = {}) => {
 //   scene.add(buildings[i]);
 // }
 
-const building1 = makeBuilding(71, 28);
+const building1 = makeBuilding(71, 28, 1, {
+  roomNames: [
+    'Men\'s Room', '101', '103', '105', '107', '109', '111', '113', '115', 'Women\'s Room', 'ATC 100', 'ATC 102', 'ATC 104', 'ATC 106', 'ATC 108', 'ATC 110', 'ATC 112', 'ATC 114'
+  ]
+});
 // building1.translateX(-50);
 // building1.translateY(25);
 building1.rotation.z += 0.5 * Math.PI;
 scene.add(building1);
 
+// import { SpriteText2D, textAlign } from 'three-text2d';
 
+// const sprite = new SpriteText2D("SPRITE", { align: textAlign.center,  font: '40px Arial', fillStyle: '#000000' , antialias: false });
+// scene.add(sprite);
 
 function animate() {
   requestAnimationFrame(animate);

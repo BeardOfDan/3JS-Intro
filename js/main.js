@@ -81,9 +81,28 @@ console.log('original: ' + JSON.stringify(arr, '', 2));
 console.log('sorted: ' + JSON.stringify(pancakeSort(arr), '', 2));
 console.log('arr: ' + JSON.stringify(arr, '', 2));
 
+const sizes = [2, 3, 5, 7, 1, 9, 8, 6, 4]; // different sizes of elements to sort
+//                                            the order here is the order they will be created in
+
+const squares = []; // array to hold the Three js objects
+
+// create boxes with sizes from the sizes array
+for (let i = 0; i < sizes.length; i++) {
+  const size = sizes[i];
+
+  const geometry = new THREE.BoxGeometry(size, size, 1);
+  // TODO: get this color from a pre-set array
+  const material = new THREE.MeshBasicMaterial({ color: '#' + ("000000" + Math.random().toString(16).slice(2, 8).toUpperCase()).slice(-6) });
+  const square = new THREE.Mesh(geometry, material);
+
+  square.translateY(-i * 2 + 5);
+
+  squares.push(square);
+  scene.add(squares[i]);
+}
 
 const flipping = {
-  rotationIncrement: 0.5, // how much the animate function rotates a group by per function call
+  rotationIncrement: 0.1, // how much the animate function rotates a group by per function call
   animationIndex: 0, // index for flipIndexes for animation
   rotationAmount: 0 // ranges from 0 to 180, then gets reset
 };

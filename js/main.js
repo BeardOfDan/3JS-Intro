@@ -39,12 +39,16 @@ group1.add(alpha);
 group1.translateY(-0.75);
 scene.add(group1);
 
+const flipIndexes = []; // indexes of where to perform pancake flip, for animation
+
 const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 // a mutative function
 const flip = (arr, end) => {
   let temp = undefined; // holds a value from the array
   let start = 0;
+
+  flipIndexes.push(end); // build list of actions for animation
 
   while (start < end) {
     temp = arr[start];
@@ -77,10 +81,27 @@ console.log('original: ' + JSON.stringify(arr, '', 2));
 console.log('sorted: ' + JSON.stringify(pancakeSort(arr), '', 2));
 console.log('arr: ' + JSON.stringify(arr, '', 2));
 
+
+const flipping = {
+  rotationIncrement: 0.5, // how much the animate function rotates a group by per function call
+  animationIndex: 0, // index for flipIndexes for animation
+  rotationAmount: 0 // ranges from 0 to 180, then gets reset
+};
+
 function animate() {
   requestAnimationFrame(animate);
 
   // flipping logic here
+  if (flipping.animationIndex < flipIndexes.length) { // perform a flip
+    if (flipping.rotationAmount < 180) { // continue the current rotation
+      // create group of blocks 0 - flipIndexes[flipping.animationIndex]
+      // rotate them by flipping.rotationIncrement
+      // flipping.rotationAmount += flipping.rotationIncrement
+    } else { // prepare for next flip
+      flipping.rotationAmount = 0;
+      flipping.animationIndex++;
+    }
+  } // else, do nothing
 
   renderer.render(scene, camera);
 }

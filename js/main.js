@@ -2,7 +2,7 @@
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x909090);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 10;
+camera.position.z = 15;
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -17,7 +17,7 @@ let material = new THREE.MeshBasicMaterial({
   // wireframe: true
 });
 const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+// scene.add(cube);
 
 // alpha
 geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -29,15 +29,15 @@ material = new THREE.MeshBasicMaterial({
 });
 const alpha = new THREE.Mesh(geometry, material);
 alpha.translateX(-1);
-scene.add(alpha);
+// scene.add(alpha);
 
 
 const group1 = new THREE.Object3D();
-group1.add(alpha);
+// group1.add(alpha);
 // group1.add(beta);
 // group1.add(gamma);
 group1.translateY(-0.75);
-scene.add(group1);
+// scene.add(group1);
 
 const flipIndexes = []; // indexes of where to perform pancake flip, for animation
 
@@ -70,6 +70,9 @@ const pancakeSort = (original) => {
 
     if (maxIndex !== (i - 1)) {
       flip(arr, maxIndex);
+
+      // while nextMaxIndex = i - 1, decrement the 2nd arg for next flip call, since it's already correct
+
       flip(arr, (i - 1));
     }
   }
@@ -77,12 +80,17 @@ const pancakeSort = (original) => {
   return arr;
 };
 
-console.log('original: ' + JSON.stringify(arr, '', 2));
-console.log('sorted: ' + JSON.stringify(pancakeSort(arr), '', 2));
-console.log('arr: ' + JSON.stringify(arr, '', 2));
+// console.log('original: ' + JSON.stringify(arr, '', 2));
+// console.log('sorted: ' + JSON.stringify(pancakeSort(arr), '', 2));
+// console.log('arr: ' + JSON.stringify(arr, '', 2));
 
 const sizes = [2, 3, 5, 7, 1, 9, 8, 6, 4]; // different sizes of elements to sort
 //                                            the order here is the order they will be created in
+
+console.log('original: ' + JSON.stringify(sizes, '', 2));
+console.log('sorted: ' + JSON.stringify(pancakeSort(sizes), '', 2));
+console.log('sizes: ' + JSON.stringify(sizes, '', 2));
+
 
 const squares = []; // array to hold the Three js objects
 
@@ -91,40 +99,114 @@ for (let i = 0; i < sizes.length; i++) {
   const size = sizes[i];
 
   const geometry = new THREE.BoxGeometry(size, size, 1);
+  // geometry.center();
   // TODO: get this color from a pre-set array
   const material = new THREE.MeshBasicMaterial({ color: '#' + ("000000" + Math.random().toString(16).slice(2, 8).toUpperCase()).slice(-6) });
   const square = new THREE.Mesh(geometry, material);
 
-  square.translateY(-i * 2 + 5);
+  square.translateY(-i * 1.5 + 6);
+  square.rotation.x = Math.PI / 2;
+  // square.rotation.z = Math.PI / 2;
+  // square.rotation.y = Math.PI / 2;
 
   squares.push(square);
   scene.add(squares[i]);
 }
 
+// TODO: Add every element in squares to a group, rotate the group for an optimal viewing angle, then dissolve the group, so the elements can be added to some other group
+
 const flipping = {
-  rotationIncrement: 0.1, // how much the animate function rotates a group by per function call
+  rotationIncrement: Math.PI / 4, // how much the animate function rotates a group by per function call
   animationIndex: 0, // index for flipIndexes for animation
-  rotationAmount: 0 // ranges from 0 to 180, then gets reset
+  rotationAmount: 0, // ranges from 0 to 180, then gets reset
+  rotationLimit: Math.PI
 };
 
 function animate() {
-  requestAnimationFrame(animate);
+  // requestAnimationFrame(animate);
 
   // flipping logic here
-  if (flipping.animationIndex < flipIndexes.length) { // perform a flip
-    if (flipping.rotationAmount < 180) { // continue the current rotation
+  if (false && flipping.animationIndex < flipIndexes.length) { // perform a flip
+    requestAnimationFrame(animate);
+
+    if (flipping.rotationAmount < flipping.rotationLimit) { // continue the current rotation
+      const flipIndex = flipIndexes[flipping.animationIndex];
+      const reverses = new THREE.Object3D(); // squares to be reversed
       // create group of blocks 0 - flipIndexes[flipping.animationIndex]
-      // rotate them by flipping.rotationIncrement
-      // flipping.rotationAmount += flipping.rotationIncrement
+      for (let i = 0; i < flipIndex; i++) {
+        reverses.add(squares[i]);
+      }
+
+      // reverse their positions graphically
+      reverses.rotation.x += flipping.rotationIncrement; // Note: Y might be the wrong axis
+      // reverses.rotation.y += flipping.rotationIncrement;
+      // reverses.rotation.z += flipping.rotationIncrement;
+      flipping.rotationAmount += flipping.rotationIncrement;
+
+      // try doing the individual squares about a point (that would be the center of the group)
+
+      // reverse their positions in the squares array
+      //   otherwise, there'll be no way to keep track of which square objects are to be added to the group
+
+      // delete reverses
+      //   possibly need to re-add the squares to the scene
+      scene.add(reverses);
+      // delete reverses;
+      // for (let i = 0; i < squares.length; i++) {
+      //   scene.add(squares[i]);
+      // }
+
+      console.log('flipIndex: ' + flipIndex);
+      console.log('flipping.rotationAmount: ' + flipping.rotationAmount);
+      // console.log('reversal');
     } else { // prepare for next flip
+      // re-add all of the squares to the scene, else it will not update squares that were previously in the reverses array
+      for (let i = 0; i < squares.length; i += 2) {
+        scene.add(squares[i]);
+      }
+
       flipping.rotationAmount = 0;
       flipping.animationIndex++;
+
+      console.log('preparing for reversal');
     }
-  } // else, do nothing
+  } else {
+    // console.log('done!');
+  }
 
   renderer.render(scene, camera);
 }
-animate();
+// animate();
+renderer.render(scene, camera);
+setTimeout(animate, 100);
+
+const groupCount = 3;
+const group = new THREE.Object3D();
+for (let i = 0; i < groupCount; i++) {
+  group.add(squares[i]);
+}
+
+// group.matrixAutoUpdate = true;
+// group.center();
+group.translateY(-(groupCount / 2) * 1.5 + 6);
+scene.add(group);
+
+let foo = 0;
+const flipGroup = () => {
+  // group.translateY(-1 * (-(~~(groupCount / 2)) * 1.5 + 6));
+  group.rotation.x += Math.PI / 16;
+  foo += Math.PI / 16;
+  group.translateZ(-0.5);
+  // group.translateY(-8 * Math.sin(foo));
+  // group.translateZ(-8 * Math.sin(foo));
+  // group.translateY(-(~~(groupCount / 2)) * 1.5 + 6);
 
 
+  renderer.render(scene, camera);
+  if (foo < Math.PI) {
+    setTimeout(flipGroup, 500);
+  }
+};
+
+setTimeout(flipGroup, 500);
 

@@ -121,10 +121,35 @@ createDiamonds();
 createSpaces();
 
 renderer.render(scene, camera);
+
+const onMouseMove = (e) => {
+  mouseX = e.clientX - (window.innerWidth / 2);
+  mouseY = e.clientY - (window.innerHeight / 2);
+  camera.position.x += (mouseX - camera.position.x) * 0.005;
+  camera.position.y += (mouseY - camera.position.y) * 0.005;
+
+  camera.lookAt(scene.position);
+};
+
+document.addEventListener('mousemove', onMouseMove, false);
 // }; // end of init
 
+const onWindowResize = () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.updateProjectionMatrix();
+}
 
+window.addEventListener('resize', onWindowResize, false);
 
+const render = () => {
+  renderer.render(scene, camera);
+}
 
+const animate = () => {
+  requestAnimationFrame(animate);
+  render();
+};
 
+animate();
 

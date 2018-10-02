@@ -9,9 +9,8 @@ const container = document.getElementById('container');
 const distance = 400;
 
 
+const spheres = new THREE.Object3D(); // needs to be global scope
 const createSpheres = () => {
-  const spheres = new THREE.Object3D();
-
   // randomly generate spheres
   const numSpheres = 80;
   for (let i = 0; i < numSpheres; i++) {
@@ -40,8 +39,8 @@ const createSpheres = () => {
   scene.add(spheres);
 }; // end of createSpheres
 
+const diamondsGroup = new THREE.Object3D(); // needs to be global scope
 const createDiamonds = () => {
-  const diamondsGroup = new THREE.Object3D();
   const loader = new THREE.JSONLoader();
   const numDiamonds = 60;
 
@@ -125,10 +124,10 @@ renderer.render(scene, camera);
 const onMouseMove = (e) => {
   mouseX = e.clientX - (window.innerWidth / 2);
   mouseY = e.clientY - (window.innerHeight / 2);
-  camera.position.x += (mouseX - camera.position.x) * 0.005;
-  camera.position.y += (mouseY - camera.position.y) * 0.005;
+  camera.position.x += (mouseX - camera.position.x) * 0.05;
+  camera.position.y += (mouseY - camera.position.y) * 0.05;
 
-  camera.lookAt(scene.position);
+  // camera.lookAt(scene.position);
 };
 
 document.addEventListener('mousemove', onMouseMove, false);
@@ -143,6 +142,20 @@ const onWindowResize = () => {
 window.addEventListener('resize', onWindowResize, false);
 
 const render = () => {
+  const timer = 0.0001 * Date.now();
+
+  let rotationAmount = Math.PI / 500;
+  for (let i = 0; i < diamondsGroup.children.length; i++) {
+    const object = diamondsGroup.children[i];
+    object.position.y = 500 * Math.cos(timer + i);
+    object.rotation.y += rotationAmount;
+  }
+
+  rotationAmount = Math.PI / 60;
+  for (let i = 0; i < spheres.children.length; i++) {
+    spheres.children[i].rotation.y += (i < 20) ? rotationAmount : -rotationAmount;
+  }
+
   renderer.render(scene, camera);
 }
 

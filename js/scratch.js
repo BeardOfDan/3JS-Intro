@@ -6,7 +6,7 @@
 const container = document.getElementById('container');
 
 // Helper var which we will use as a additional correction coefficient for objects and camera
-let distance = 400;
+const distance = 400;
 
 
 const createSpheres = () => {
@@ -49,7 +49,7 @@ const createDiamonds = () => {
   loader.load('../json/diamond.json', (geometry) => {
     for (let i = numDiamonds; i++;) {
       const material = new THREE.MeshPhongMaterial({
-        color: Math.random() * 0xff0000 - 0xff0000,
+        color: (Math.random() * 0xff0000) - 0xff0000,
         shading: THREE.FlatShading
       });
       const diamond = new THREE.Mesh(geometry, material);
@@ -66,6 +66,35 @@ const createDiamonds = () => {
   });
 }; // end of createDiamonds
 
+const createSpaces = () => {
+  const dots = new THREE.Object3D();
+
+  const numDots = 720;
+  for (let i = 0; i < numDots; i++) {
+    const circleGeometry = new THREE.SphereGeometry(2, Math.random() * 5, Math.random() * 5);
+    const material = new THREE.MeshBasicMaterial({
+      color: (Math.random() * 0xff0000) - 0xff0000,
+      shading: THREE.FlatShading
+    });
+    const circle = new THREE.Mesh(circleGeometry, material);
+    material.side = THREE.DoubleSide;
+
+    circle.position.x = Math.random() * -distance * 60;
+    circle.position.y = Math.random() * -distance * 6;
+    circle.position.z = Math.random() * distance * 3;
+    circle.rotation.y = Math.random() * 2 * Math.PI;
+    circle.scale.x = circle.scale.y = circle.scale.z = Math.random() * 6 + 5;
+    dots.add(circle);
+  }
+
+  dots.position.x = 7000;
+  dots.position.y = 900;
+  dots.position.z = -2000;
+  dots.rotation.y = Math.PI * 600;
+  dots.rotation.z = Math.PI * 500;
+
+  scene.add(dots);
+}; // end of createSpaces
 
 // const init = () => {
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -89,7 +118,7 @@ scene.add(light, lightTwo, lightAmbient);
 
 createSpheres();
 createDiamonds();
-// createSpaces();
+createSpaces();
 
 renderer.render(scene, camera);
 // }; // end of init

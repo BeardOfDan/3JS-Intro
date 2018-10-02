@@ -22,6 +22,7 @@ const createSpheres = () => {
     });
 
     const particle = new THREE.Mesh(sphere, material);
+    // TODO: Use ratio of screen width to height to create a more optimal spread of positions
     particle.position.x = Math.random() * distance * 10;
     particle.position.y = Math.random() * -distance * 6;
     particle.position.z = Math.random() * distance * 4;
@@ -38,6 +39,32 @@ const createSpheres = () => {
 
   scene.add(spheres);
 }; // end of createSpheres
+
+const createDiamonds = () => {
+  const diamondsGroup = new THREE.Object3D();
+  const loader = new THREE.JSONLoader();
+  const numDiamonds = 60;
+
+  // ('https://raw.githubusercontent.com/PavelLaptev/test-rep/master/threejs-post/diamond.json',
+  loader.load('../json/diamond.json', (geometry) => {
+    for (let i = numDiamonds; i++;) {
+      const material = new THREE.MeshPhongMaterial({
+        color: Math.random() * 0xff0000 - 0xff0000,
+        shading: THREE.FlatShading
+      });
+      const diamond = new THREE.Mesh(geometry, material);
+      diamond.position.x = Math.random() * -distance * 6;
+      diamond.position.y = Math.random() * -distance * 2;
+      diamond.position.z = Math.random() * distance * 3;
+      diamond.rotation.y = Math.random() * 2 * Math.PI;
+      diamond.scale.x = diamond.scale.y = diamond.scale.z = Math.random() * 50 + 10;
+      diamondsGroup.add(diamond);
+    }
+
+    diamondsGroup.position.x = 1400;
+    scene.add(diamondsGroup);
+  });
+}; // end of createDiamonds
 
 
 // const init = () => {
@@ -61,8 +88,8 @@ const lightAmbient = new THREE.AmbientLight(0x404040);
 scene.add(light, lightTwo, lightAmbient);
 
 createSpheres();
-// createDiamond();
-// createSpace();
+createDiamonds();
+// createSpaces();
 
 renderer.render(scene, camera);
 // }; // end of init

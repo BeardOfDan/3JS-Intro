@@ -120,6 +120,10 @@ createDiamonds();
 createSpaces();
 
 renderer.render(scene, camera);
+// }; // end of init
+
+
+// Event Handlers
 
 const onMouseMove = (e) => {
   mouseX = e.clientX - (window.innerWidth / 2);
@@ -131,7 +135,6 @@ const onMouseMove = (e) => {
 };
 
 document.addEventListener('mousemove', onMouseMove, false);
-// }; // end of init
 
 const onWindowResize = () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -140,6 +143,8 @@ const onWindowResize = () => {
 }
 
 window.addEventListener('resize', onWindowResize, false);
+
+// animation loop
 
 const render = () => {
   const timer = 0.0001 * Date.now();
